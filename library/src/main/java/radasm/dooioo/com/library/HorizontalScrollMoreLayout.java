@@ -1,4 +1,4 @@
-package com.dooioo.mobile.common.view;
+package radasm.dooioo.com.library;
 
 import android.content.Context;
 import android.util.AttributeSet;

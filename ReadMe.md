@@ -1,22 +1,15 @@
-package radasm.dooioo.com.horizontalloadmorelayout;
+### 这是一个横向拉动，可以load More的控件，你可以在回调loadMore接口中做一些事情（比如跳转什么的。。。）
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
+> preview
 
-import radasm.dooioo.com.library.HorizontalScrollMoreLayout;
+![horizontalScrollMoreLayout](![http://o7zh7nhn0.bkt.clouddn.com/horizontalScrollMoreLayout.gif])
 
-public class MainActivity extends AppCompatActivity {
+### 使用见demo，在xml文件中写入`horizontalScrollMoreLayout`最后一个view将成为loadmore展示的view
 
-    private HorizontalScrollMoreLayout horizontalScrollMoreLayout;
+### 回调接口
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        horizontalScrollMoreLayout = (HorizontalScrollMoreLayout) findViewById(R.id.horizontalScrollMoreLayout);
+```
+horizontalScrollMoreLayout = (HorizontalScrollMoreLayout) findViewById(R.id.horizontalScrollMoreLayout);
 
         horizontalScrollMoreLayout.setLoadMoreListener(new HorizontalScrollMoreLayout.LoadMoreListener() {
             @Override
@@ -31,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void loadMoreAnimation(View moreView) {
+                // 可以设置动画什么的
                 if(moreView instanceof TextView){
                     TextView moretextView = (TextView) moreView;
                     moretextView.setText("更多");
@@ -45,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+```
 
 
-    }
-}
+### 注意事项：
+
+- 如果你希望动态的addView，则需要在addView完毕之后，主动调用`requestLayout()`方法。
