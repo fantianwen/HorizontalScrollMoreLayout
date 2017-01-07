@@ -2,7 +2,7 @@
 
 > preview
 
-![horizontalScrollMoreLayout](![http://o7zh7nhn0.bkt.clouddn.com/horizontalScrollMoreLayout.gif])
+![horizontalScrollMoreLayout](http://o7zh7nhn0.bkt.clouddn.com/horizontalScrollMoreLayout.gif)
 
 ### 使用见demo，在xml文件中写入`horizontalScrollMoreLayout`最后一个view将成为loadmore展示的view
 
