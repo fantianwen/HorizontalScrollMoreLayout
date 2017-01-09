@@ -43,7 +43,7 @@
 
 ### TODO
 
-- [ ] 流畅的滑动
+- [x] 流畅的滑动
 - [ ] 支持内部可以横线滚动的View，如`LinearLayout`等
 - [x] 暴露loadmoreView，可以自定义
 - [x] 默认的动画

@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -65,7 +63,6 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
 
     private void init(AttributeSet attrs) {
         mScroller = new Scroller(mContext);
-        mVelocityTracker = VelocityTracker.obtain();
         mTouchSlop = ViewConfiguration.get(mContext).getScaledPagingTouchSlop();
         mMaxVelocity = ViewConfiguration.get(mContext).getScaledMaximumFlingVelocity();
         mMinVelocity = ViewConfiguration.get(mContext).getScaledMinimumFlingVelocity();
@@ -75,14 +72,6 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
         loadMoreViewLayoutResId = typedArray.getResourceId(R.styleable.HorizontalScrollMoreLayout_loadMoreView, -1);
 
         typedArray.recycle();
-        // TODO: 17/1/7 属性设置更多的load More的View
-
-//        getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-//            @Override
-//            public void onScrollChanged() {
-//                if(getScrollX())
-//            }
-//        });
     }
 
     @Override
@@ -170,6 +159,7 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        obtainVelocityTracker();
         mVelocityTracker.addMovement(event);
         int action = event.getAction();
         switch (action & MotionEvent.ACTION_MASK) {
@@ -217,27 +207,28 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
                 int dx = getScrollX() + getWidth() - getChildAt(getChildCount() - 1).getLeft();
                 if (canLoadMore) {
                     if (getScrollX() + getWidth() < animationBorder && getScrollX() + getWidth() > shouldBeginAnimationBorderX) {
-                        Log.e("onTouchEvent: ", "1");
                         mScroller.startScroll(getScrollX(), 0, -dx, 0);
                         if (mLoadMoreDelegator != null) {
                             mLoadMoreDelegator.onLoadMoreBack();
                         }
                     } else if (getScrollX() + getWidth() >= animationBorder) {
-                        Log.e("onTouchEvent: ", "2");
                         mScroller.startScroll(getScrollX(), 0, -dx, 0);
                         if (mLoadMoreDelegator != null) {
                             mLoadMoreDelegator.onLoadMore();
                         }
-                    } else {
-                        Log.e("onTouchEvent: ", "3");
                     }
                     invalidate();
                 }
-                break;
-            case MotionEvent.ACTION_CANCEL:
+                releaseVelocityTracker();
                 break;
         }
         return super.onTouchEvent(event);
+    }
+
+    private void obtainVelocityTracker() {
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
+        }
     }
 
     @Override
