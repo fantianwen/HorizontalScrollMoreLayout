@@ -1,10 +1,13 @@
 package radasm.dooioo.com.horizontalloadmorelayout;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.TextView;
 
 import radasm.dooioo.com.library.HorizontalScrollMoreLayout;
 
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        horizontalScrollMoreLayout.addView(generateView());
+
         horizontalScrollMoreLayout.setLoadMoreListener(new HorizontalScrollMoreLayout.LoadMoreListener() {
             @Override
             public void onLoadMore() {
@@ -42,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private View generateView() {
+        TextView textView = new TextView(this);
+        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        textView.setText("addedView");
+        textView.setBackgroundColor(Color.BLUE);
+        return textView;
     }
 
     public static void rotate(View moreView) {

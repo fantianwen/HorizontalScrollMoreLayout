@@ -52,3 +52,4 @@
 ### 注意事项：
 
 - 如果你希望动态的addView，则需要在addView完毕之后，主动调用`requestLayout()`方法。
+- 如果你希望在代码中addView，建议直接调用经过覆写之后的`addView()`即可，会添加在loadMoreView之前。

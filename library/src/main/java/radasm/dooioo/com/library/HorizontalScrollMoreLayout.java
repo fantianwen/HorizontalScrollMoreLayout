@@ -83,6 +83,11 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
         }
     }
 
+    @Override
+    public void addView(View child) {
+        addView(child, getChildCount() - 1);
+    }
+
     private View provideMoreView() {
         if (loadMoreViewLayoutResId < 0) {
             ImageView imageView = new ImageView(mContext);
