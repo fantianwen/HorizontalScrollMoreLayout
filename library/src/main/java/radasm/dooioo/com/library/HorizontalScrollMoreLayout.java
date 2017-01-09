@@ -2,12 +2,16 @@ package radasm.dooioo.com.library;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -22,6 +26,7 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
 
     private final Context mContext;
     private Scroller mScroller;
+    private VelocityTracker mVelocityTracker;
 
     // 显示load more动画的View
     private View mMoreView;
@@ -31,6 +36,7 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
     private float mTouchSlop;
     private int leftBorder;
     private int rightBorder;
+    private int mFlingXMax;
     private int animationBorder;
     private int shouldBeginAnimationBorderX;
     private LoadMoreListener mLoadMoreDelegator;
@@ -38,6 +44,8 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
     private boolean canLoadMore;
     private int loadMoreViewLayoutResId;
     private LoadMoreAnimation mLoadMoreAnimationDelegator;
+    private int mMaxVelocity;
+    private int mMinVelocity;
 
     public HorizontalScrollMoreLayout(Context context) {
         this(context, null);
@@ -57,7 +65,10 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
 
     private void init(AttributeSet attrs) {
         mScroller = new Scroller(mContext);
+        mVelocityTracker = VelocityTracker.obtain();
         mTouchSlop = ViewConfiguration.get(mContext).getScaledPagingTouchSlop();
+        mMaxVelocity = ViewConfiguration.get(mContext).getScaledMaximumFlingVelocity();
+        mMinVelocity = ViewConfiguration.get(mContext).getScaledMinimumFlingVelocity();
 
         TypedArray typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.HorizontalScrollMoreLayout);
         canLoadMore = typedArray.getBoolean(R.styleable.HorizontalScrollMoreLayout_loadMore, true);
@@ -65,6 +76,13 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
 
         typedArray.recycle();
         // TODO: 17/1/7 属性设置更多的load More的View
+
+//        getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+//            @Override
+//            public void onScrollChanged() {
+//                if(getScrollX())
+//            }
+//        });
     }
 
     @Override
@@ -118,6 +136,7 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
         if (childCount > 0) {
             leftBorder = getChildAt(0).getLeft();
             rightBorder = getChildAt(getChildCount() - 1).getRight();
+            mFlingXMax = getChildAt(getChildCount() - 1).getLeft() - getWidth();
 
             shouldBeginAnimationBorderX = rightBorder - getChildAt(getChildCount() - 1).getMeasuredWidth();
             animationBorder = rightBorder - getChildAt(getChildCount() - 1).getMeasuredWidth() / 2;
@@ -148,8 +167,10 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
         return super.onInterceptTouchEvent(ev);
     }
 
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        mVelocityTracker.addMovement(event);
         int action = event.getAction();
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_MOVE:
@@ -185,23 +206,35 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
                 mXLastMove = mXMove;
                 break;
             case MotionEvent.ACTION_UP:
+                mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
+                float xVelocity = mVelocityTracker.getXVelocity();
 
+                if (Math.abs(xVelocity) > mMinVelocity) {
+                    mScroller.fling(getScrollX(), 0, (int) -(xVelocity + 0.5), 0, 0, mFlingXMax, 0, getHeight());
+                    ViewCompat.postInvalidateOnAnimation(this);
+                }
+
+                int dx = getScrollX() + getWidth() - getChildAt(getChildCount() - 1).getLeft();
                 if (canLoadMore) {
-                    int dx = getScrollX() + getWidth() - getChildAt(getChildCount() - 1).getLeft();
                     if (getScrollX() + getWidth() < animationBorder && getScrollX() + getWidth() > shouldBeginAnimationBorderX) {
+                        Log.e("onTouchEvent: ", "1");
                         mScroller.startScroll(getScrollX(), 0, -dx, 0);
                         if (mLoadMoreDelegator != null) {
                             mLoadMoreDelegator.onLoadMoreBack();
                         }
                     } else if (getScrollX() + getWidth() >= animationBorder) {
+                        Log.e("onTouchEvent: ", "2");
                         mScroller.startScroll(getScrollX(), 0, -dx, 0);
                         if (mLoadMoreDelegator != null) {
                             mLoadMoreDelegator.onLoadMore();
                         }
+                    } else {
+                        Log.e("onTouchEvent: ", "3");
                     }
                     invalidate();
                 }
-
+                break;
+            case MotionEvent.ACTION_CANCEL:
                 break;
         }
         return super.onTouchEvent(event);
@@ -251,6 +284,14 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
         rotateAnimation.setRepeatCount(0);
         moreView.setAnimation(rotateAnimation);
         rotateAnimation.start();
+    }
+
+    private void releaseVelocityTracker() {
+        if (null != mVelocityTracker) {
+            mVelocityTracker.clear();
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
     }
 
 }
