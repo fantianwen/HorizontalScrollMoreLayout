@@ -8,6 +8,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.Scroller;
 
@@ -35,6 +37,7 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
     private boolean isLoadingAnimation;
     private boolean canLoadMore;
     private int loadMoreViewLayoutResId;
+    private LoadMoreAnimation mLoadMoreAnimationDelegator;
 
     public HorizontalScrollMoreLayout(Context context) {
         this(context, null);
@@ -80,8 +83,8 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
             imageView.setImageDrawable(getResources().getDrawable(android.R.drawable.arrow_down_float));
             return imageView;
         } else {
-            View loadMoreView = View.inflate(mContext, loadMoreViewLayoutResId, null);
-            return loadMoreView;
+            View view = View.inflate(mContext, loadMoreViewLayoutResId, null);
+            return view;
         }
     }
 
@@ -160,13 +163,21 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
                     scrollTo(rightBorder - getWidth(), 0);
                     return true;
                 } else if (rightlimitX < animationBorder && rightlimitX > shouldBeginAnimationBorderX) {
-                    if (canLoadMore && isLoadingAnimation && mLoadMoreDelegator != null) {
-                        mLoadMoreDelegator.loadMoreBackAnimation(mMoreView);
+                    if (canLoadMore && isLoadingAnimation) {
+                        if (mLoadMoreAnimationDelegator != null) {
+                            mLoadMoreAnimationDelegator.loadMoreBackAnimation(mMoreView);
+                        } else {
+                            rotate(mMoreView);
+                        }
                         isLoadingAnimation = false;
                     }
                 } else if (rightlimitX >= animationBorder) {
-                    if (canLoadMore && !isLoadingAnimation && mLoadMoreDelegator != null) {
-                        mLoadMoreDelegator.loadMoreAnimation(mMoreView);
+                    if (canLoadMore && !isLoadingAnimation) {
+                        if (mLoadMoreAnimationDelegator != null) {
+                            mLoadMoreAnimationDelegator.loadMoreAnimation(mMoreView);
+                        } else {
+                            rotate(mMoreView);
+                        }
                         isLoadingAnimation = true;
                     }
                 }
@@ -204,6 +215,10 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
         }
     }
 
+    public void setLoadingMoreAnimation(LoadMoreAnimation loadingMoreAnimation) {
+        this.mLoadMoreAnimationDelegator = loadingMoreAnimation;
+    }
+
     public void setLoadMoreListener(LoadMoreListener loadMoreListener) {
         this.mLoadMoreDelegator = loadMoreListener;
     }
@@ -212,19 +227,30 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
         this.canLoadMore = canLoadMore;
     }
 
-    public interface LoadMoreListener {
-        void onLoadMore();
-
-        void onLoadMoreBack();
-
+    public interface LoadMoreAnimation {
         void loadMoreAnimation(View moreView);
 
         void loadMoreBackAnimation(View moreView);
     }
 
+    public interface LoadMoreListener {
+        void onLoadMore();
+
+        void onLoadMoreBack();
+    }
+
     public static int dp2px(Context context, int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
                 context.getResources().getDisplayMetrics());
+    }
+
+    public static void rotate(View moreView) {
+        RotateAnimation rotateAnimation = new RotateAnimation(0f, 180f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setFillAfter(true);
+        rotateAnimation.setDuration(500);
+        rotateAnimation.setRepeatCount(0);
+        moreView.setAnimation(rotateAnimation);
+        rotateAnimation.start();
     }
 
 }

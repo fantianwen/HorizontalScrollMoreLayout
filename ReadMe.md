@@ -4,7 +4,10 @@
 
 ![horizontalScrollMoreLayout](http://o7zh7nhn0.bkt.clouddn.com/horizontalScrollMoreLayout.gif)
 
-### 使用见demo，在xml文件中写入`horizontalScrollMoreLayout`最后一个view将成为loadmore展示的view
+### feature
+
+- `loadMore` : 如果设置为`true`,则支持loadMore，否则就是一个普通的横向滑动的Layout；
+- `loadMoreView` : 设置需要展示的loadMore的view，当然，已经默认有一个实现了。
 
 ### 回调接口
 
@@ -44,7 +47,7 @@ horizontalScrollMoreLayout = (HorizontalScrollMoreLayout) findViewById(R.id.hori
 ### TODO
 
 - [ ] 支持内部可以横线滚动的View，如`LinearLayout`等
-- [ ] 暴露loadmoreView，可以自定义
+- [x] 暴露loadmoreView，可以自定义
 - [ ] 默认的动画
 
 
