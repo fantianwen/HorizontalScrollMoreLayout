@@ -12,6 +12,7 @@ import android.widget.Scroller;
  * Created by RadAsm on 17/1/7.
  * <p>
  * Note：如果需要动态添加一些View，需要在添加完毕之后制动调用{@link View#requestLayout()}使其重新布局
+ *
  */
 public class HorizontalScrollMoreLayout extends ViewGroup {
 
