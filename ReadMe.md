@@ -6,8 +6,8 @@
 
 ### feature
 
-- `loadMore` : 如果设置为`true`,则支持loadMore，否则就是一个普通的横向滑动的Layout；
-- `loadMoreView` : 设置需要展示的loadMore的view，当然，已经默认有一个实现了。
+- `app:loadMore` : 如果设置为`true`,则支持loadMore，否则就是一个普通的横向滑动的Layout；
+- `app:loadMoreView` : 设置需要展示的loadMore的view，当然，已经默认有一个实现了。
 
 - 设置自定义的loadMore的动画
 
