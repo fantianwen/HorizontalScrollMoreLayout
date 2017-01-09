@@ -1,18 +1,20 @@
 package radasm.dooioo.com.library;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Scroller;
 
 /**
  * Created by RadAsm on 17/1/7.
  * <p>
  * Note：如果需要动态添加一些View，需要在添加完毕之后制动调用{@link View#requestLayout()}使其重新布局
- *
  */
 public class HorizontalScrollMoreLayout extends ViewGroup {
 
@@ -31,7 +33,8 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
     private int shouldBeginAnimationBorderX;
     private LoadMoreListener mLoadMoreDelegator;
     private boolean isLoadingAnimation;
-    private boolean canLoadMore = true;
+    private boolean canLoadMore;
+    private int loadMoreViewLayoutResId;
 
     public HorizontalScrollMoreLayout(Context context) {
         this(context, null);
@@ -46,14 +49,40 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
 
         this.mContext = context;
 
-        init();
+        init(attrs);
     }
 
-    private void init() {
+    private void init(AttributeSet attrs) {
         mScroller = new Scroller(mContext);
         mTouchSlop = ViewConfiguration.get(mContext).getScaledPagingTouchSlop();
 
+        TypedArray typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.HorizontalScrollMoreLayout);
+        canLoadMore = typedArray.getBoolean(R.styleable.HorizontalScrollMoreLayout_loadMore, true);
+        loadMoreViewLayoutResId = typedArray.getResourceId(R.styleable.HorizontalScrollMoreLayout_loadMoreView, -1);
+
+        typedArray.recycle();
         // TODO: 17/1/7 属性设置更多的load More的View
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        if (canLoadMore) {
+            View moreView = provideMoreView();
+            addView(moreView, -1);
+        }
+    }
+
+    private View provideMoreView() {
+        if (loadMoreViewLayoutResId < 0) {
+            ImageView imageView = new ImageView(mContext);
+            imageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+            imageView.setImageDrawable(getResources().getDrawable(android.R.drawable.arrow_down_float));
+            return imageView;
+        } else {
+            View loadMoreView = View.inflate(mContext, loadMoreViewLayoutResId, null);
+            return loadMoreView;
+        }
     }
 
     @Override
@@ -191,7 +220,11 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
         void loadMoreAnimation(View moreView);
 
         void loadMoreBackAnimation(View moreView);
+    }
 
+    public static int dp2px(Context context, int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                context.getResources().getDisplayMetrics());
     }
 
 }

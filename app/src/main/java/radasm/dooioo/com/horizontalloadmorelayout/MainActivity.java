@@ -1,7 +1,7 @@
 package radasm.dooioo.com.horizontalloadmorelayout;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void loadMoreAnimation(View moreView) {
-                if(moreView instanceof TextView){
+                if (moreView instanceof TextView) {
                     TextView moretextView = (TextView) moreView;
                     moretextView.setText("更多");
                 }
@@ -39,12 +39,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void loadMoreBackAnimation(View moreView) {
-                if(moreView instanceof TextView){
+                if (moreView instanceof TextView) {
                     TextView moretextView = (TextView) moreView;
                     moretextView.setText("回来");
                 }
             }
         });
-
     }
+
 }

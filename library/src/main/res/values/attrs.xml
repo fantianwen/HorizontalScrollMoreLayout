@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HorizontalScrollMoreLayout">
+        <!-- 表明是否可以loadMore，否则就是一个普通的滑动Layout -->
+        <attr name="loadMore" format="boolean" />
+        <!-- loadMore的View -->
+        <attr name="loadMoreView" format="integer" />
+    </declare-styleable>
+</resources>
