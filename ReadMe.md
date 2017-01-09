@@ -9,46 +9,43 @@
 - `loadMore` : 如果设置为`true`,则支持loadMore，否则就是一个普通的横向滑动的Layout；
 - `loadMoreView` : 设置需要展示的loadMore的view，当然，已经默认有一个实现了。
 
-### 回调接口
+- 设置自定义的loadMore的动画
 
-```
-horizontalScrollMoreLayout = (HorizontalScrollMoreLayout) findViewById(R.id.horizontalScrollMoreLayout);
-
-        horizontalScrollMoreLayout.setLoadMoreListener(new HorizontalScrollMoreLayout.LoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-
-            }
-
-            @Override
-            public void onLoadMoreBack() {
-
-            }
-
-            @Override
-            public void loadMoreAnimation(View moreView) {
-                // 可以设置动画什么的
-                if(moreView instanceof TextView){
-                    TextView moretextView = (TextView) moreView;
-                    moretextView.setText("更多");
+    ```
+    horizontalScrollMoreLayout.setLoadingMoreAnimation(new HorizontalScrollMoreLayout.LoadMoreAnimation() {
+                @Override
+                public void loadMoreAnimation(View moreView) {
+                    rotate(moreView);
                 }
-            }
-
-            @Override
-            public void loadMoreBackAnimation(View moreView) {
-                if(moreView instanceof TextView){
-                    TextView moretextView = (TextView) moreView;
-                    moretextView.setText("回来");
+    
+                @Override
+                public void loadMoreBackAnimation(View moreView) {
+                    rotate(moreView);
                 }
-            }
-        });
-```
+            });
+    ```
+
+- 设置当loadMore触发时候的回调
+
+    ```
+    horizontalScrollMoreLayout.setLoadMoreListener(new HorizontalScrollMoreLayout.LoadMoreListener() {
+                @Override
+                public void onLoadMore() {
+    
+                }
+    
+                @Override
+                public void onLoadMoreBack() {
+    
+                }
+            });
+    ```
 
 ### TODO
 
 - [ ] 支持内部可以横线滚动的View，如`LinearLayout`等
 - [x] 暴露loadmoreView，可以自定义
-- [ ] 默认的动画
+- [x] 默认的动画
 
 
 ### 注意事项：
