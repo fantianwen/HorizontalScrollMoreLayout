@@ -135,6 +135,8 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
             shouldBeginAnimationBorderX = rightBorder - getChildAt(getChildCount() - 1).getMeasuredWidth();
             animationBorder = rightBorder - getChildAt(getChildCount() - 1).getMeasuredWidth() / 2;
 
+            canLoadMore = rightBorder > getWidth();
+
             if (canLoadMore) {
                 mMoreView = getChildAt(getChildCount() - 1);
             }
@@ -153,7 +155,7 @@ public class HorizontalScrollMoreLayout extends ViewGroup {
                 float diff = Math.abs(mXMove - mXDown);
                 mXLastMove = mXMove;
                 // 当手指拖动值大于TouchSlop值时，认为应该进行滚动，拦截子控件的事件
-                if (diff > mTouchSlop) {
+                if (canLoadMore && diff > mTouchSlop) {
                     return true;
                 }
                 break;
